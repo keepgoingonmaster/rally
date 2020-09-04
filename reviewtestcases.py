@@ -43,6 +43,17 @@ logger.addHandler(ch)
 
 #################################################################################################
 #################################################################################################
+def autofitexcel(excelname, sheetname='result'):
+    import win32com.client as win32
+    excel = win32.gencache.EnsureDispatch('Excel.Application')
+    wb = excel.Workbooks.Open(excelname)
+    ws = wb.Worksheets(sheetname)
+    ws.Columns.AutoFit()
+    wb.Save()
+    excel.Application.Quit()
+
+
+
 def createlink(excelname, collectionitems, urlprefix, sheetname1='Hyperlinks', sheetname2 ='result'):
     # sheetname1 = 'Hyperlinks'
     # sheetname2 = 'result'
@@ -154,7 +165,6 @@ def reviewtestcases(rallyUtil, excelname, collectionitems, urlprefix, sheetnamel
 
     workbook.close()
 
-
 def fillexcelcells(worksheets, idxlist, idx, eachitem, cell_format, noresult_format, resultanalysis=True):
     worksheets[idx].write_url('A' + str(idxlist[idx]), urlprefix + str(eachitem.oid), cell_format,
                             string=eachitem.FormattedID)
@@ -227,54 +237,27 @@ if __name__ == '__main__' :
 
     start_time = datetime.now()
 
-    testsetNames = [
-        "F28343: Function test",
-        "F28343: Performance test",
-        "F28343: Stability test"
-    ]
-    testTypes = [
-        'Functional',
-        'Performance',
-        'Stability'
-    ]
-    iterationName = "I-8-2020"
-    stage = 'Code Freeze'
-    owner = 'Jine Wang'
-    testsets = []
-    for testsetName, testType in zip(testsetNames, testTypes):
-        testset = rallyUtil.create_testset(testsetName, iterationName, stage, testType, owner)
-        if  testset:
-            testsets.append(testset)
-        else:
-            logging.error("create test set fail")
-            for item in testsets:
-                rallyUtil.rally.delete(entityName='TestSet', itemIdent=item.FormattedID, project='current',
-                                  workspace='current')
-            exit(0)
-
-    logging.info(f"create test sets {testsets}")
-
-
-    testfolderID = "TF8697"
-    ident_query = 'FormattedID = "%s"' % testfolderID
-    itemResponse = rallyUtil.rally.get('TestFolder', fetch=True, query=ident_query,
+    itemResponse = rallyUtil.rally.get('TestCase', fetch=True,
                                        workspace=workspace, project=project)
 
     item = next(itemResponse, None)
-    if item:
-        testcases = rallyUtil.rally.getCollection('https://rally1.rallydev.com/slm/webservice/v2.0/TestFolder/' + str(item.oid) +'/TestCases')
-        for testcase in testcases:
-            for idx, testType in enumerate(testTypes):
-                if testcase.Type == testType:
-                    rallyUtil.add_testcasetotestfolder(testsets[idx], testcase.FormattedID)
-            # if testcase.Type == 'Functional':
-            #     rallyUtil.add_testcasetotestfolder(testsets[0], testcase.FormattedID)
-            # elif testcase.Type == 'Performance':
-            #     rallyUtil.add_testcasetotestfolder(testsets[1], testcase.FormattedID)
-            # elif testcase.Type == 'Scalability':
-            #     rallyUtil.add_testcasetotestfolder(testsets[2], testcase.FormattedID)
-            # elif testcase.Type == 'Stability':
-            #     rallyUtil.add_testcasetotestfolder(testsets[3], testcase.FormattedID)
+    collectionitems = []
+    sheetnamelist = [
+        'total cases',
+        'manual_active cases',
+        'automated_active cases',
+        'manual_future cases',
+        'automated_future cases',
+        'manual_retired cases',
+        'automated_retired cases'
+    ]
+    titlelist = ["TestCaseID", "Description", "Type", "Status", "Owner", "LastUpdateDate", "Verdict"]
+    while item:
+        collectionitems.append(item)
+        item = next(itemResponse, None)
+
+    urlprefix = "https://rally1.rallydev.com/#/detail/testcase/"
+    reviewtestcases(rallyUtil, excelname, collectionitems, urlprefix, sheetnamelist, titlelist)
            
     end_time = datetime.now()
     # print('Duration: {}'.format(end_time - start_time))

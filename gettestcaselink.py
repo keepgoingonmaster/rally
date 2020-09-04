@@ -132,7 +132,7 @@ if __name__ == '__main__' :
     username = "jinewang@microstrategy.com"
     password = ""
     workspace = "MicroStrategy Workspace"
-    project = "SR-Intelligence"
+    project = "SR-Intelligence-Kernel"
 
     rallyUtil = RallyUtil()
 

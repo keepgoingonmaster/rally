@@ -172,6 +172,19 @@ class RallyUtil(object):
 
         return test_cases
 
+    def get_testcases_from_testset(self, testset_id):
+        # query critial to get all active test cases
+        query = 'TestSet.FormattedID = "%s"' % testset_id
+        response = self.rally.get('TestCase', query=query,
+                                  fetch=True, projectScopeDown=True)
+        # get('TestSet', fetch=True, query='FormattedID = "%s"' % ts)
+        test_cases = []
+        for entry in response:
+            logger.debug(entry.FormattedID, entry.Name)
+            test_cases.append(entry)
+
+        return test_cases
+
     def delete_all_testcases_in_testfolder(self, testfolder_id):
         for item in self.get_testcases_from_testfolder(testfolder_id=testfolder_id):
             logger.info('deleting testcase {} {}'.format(item.FormattedID, item.Name))
@@ -249,9 +262,9 @@ class RallyUtil(object):
 
     def add_defectstouserstory(self, userstory_id, defect_id):
         entity = self._get_entity_by_id(userstory_id)
-        defectsList = []
+        testcasesList = []
         defect = self.get_testcase_by_id(defect_id)
-        defectsList.append(defect)
+        testcasesList.append(defect)
 
         try:
             self.rally.addCollectionItems(entity, testcasesList)

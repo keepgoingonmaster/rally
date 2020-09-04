@@ -227,62 +227,72 @@ if __name__ == '__main__' :
 
     start_time = datetime.now()
 
-    testsetNames = [
-        "F28343: Function test",
-        "F28343: Performance test",
-        "F28343: Stability test"
-    ]
-    testTypes = [
-        'Functional',
-        'Performance',
-        'Stability'
-    ]
-    iterationName = "I-8-2020"
-    stage = 'Code Freeze'
-    owner = 'Jine Wang'
-    testsets = []
-    for testsetName, testType in zip(testsetNames, testTypes):
-        testset = rallyUtil.create_testset(testsetName, iterationName, stage, testType, owner)
-        if  testset:
-            testsets.append(testset)
-        else:
-            logging.error("create test set fail")
-            for item in testsets:
-                rallyUtil.rally.delete(entityName='TestSet', itemIdent=item.FormattedID, project='current',
-                                  workspace='current')
-            exit(0)
-
-    logging.info(f"create test sets {testsets}")
-
-
-    testfolderID = "TF8697"
-    ident_query = 'FormattedID = "%s"' % testfolderID
-    itemResponse = rallyUtil.rally.get('TestFolder', fetch=True, query=ident_query,
-                                       workspace=workspace, project=project)
-
-    item = next(itemResponse, None)
-    if item:
-        testcases = rallyUtil.rally.getCollection('https://rally1.rallydev.com/slm/webservice/v2.0/TestFolder/' + str(item.oid) +'/TestCases')
-        for testcase in testcases:
-            for idx, testType in enumerate(testTypes):
-                if testcase.Type == testType:
-                    rallyUtil.add_testcasetotestfolder(testsets[idx], testcase.FormattedID)
-            # if testcase.Type == 'Functional':
-            #     rallyUtil.add_testcasetotestfolder(testsets[0], testcase.FormattedID)
-            # elif testcase.Type == 'Performance':
-            #     rallyUtil.add_testcasetotestfolder(testsets[1], testcase.FormattedID)
-            # elif testcase.Type == 'Scalability':
-            #     rallyUtil.add_testcasetotestfolder(testsets[2], testcase.FormattedID)
-            # elif testcase.Type == 'Stability':
-            #     rallyUtil.add_testcasetotestfolder(testsets[3], testcase.FormattedID)
-           
-    end_time = datetime.now()
-    # print('Duration: {}'.format(end_time - start_time))
-    duration = end_time - start_time
-    logging.info(f'Duration: {duration}')
+    # testsetNames = [
+    #     "F28343: Function test",
+    #     "F28343: Performance test",
+    #     "F28343: Stability test"
+    # ]
+    # testTypes = [
+    #     'Functional',
+    #     'Performance',
+    #     'Stability'
+    # ]
+    # iterationName = "I-8-2020"
+    # stage = 'Code Freeze'
+    # owner = 'Jine Wang'
+    # testsets = []
+    # for testsetName, testType in zip(testsetNames, testTypes):
+    #     testset = rallyUtil.create_testset(testsetName, iterationName, stage, testType, owner)
+    #     if  testset:
+    #         testsets.append(testset)
+    #     else:
+    #         logging.error("create test set fail")
+    #         for item in testsets:
+    #             rallyUtil.rally.delete(entityName='TestSet', itemIdent=item.FormattedID, project='current',
+    #                               workspace='current')
+    #         exit(0)
+    #
+    # logging.info(f"create test sets {testsets}")
 
 
-    logging.info("Test is done")
+    testsetID = 'TS46999'
+    ident_query = 'FormattedID = "%s"' % testsetID
+    testsetresp = rallyUtil.rally.get('TestSet', fetch=True, query=ident_query,
+                        workspace=workspace, project=project)
+
+    testset = next(testsetresp, None)
+
+    if testset:
+
+        testfolderID = "TF8672"
+        ident_query = 'FormattedID = "%s"' % testfolderID
+        itemResponse = rallyUtil.rally.get('TestFolder', fetch=True, query=ident_query,
+                                           workspace=workspace, project=project)
+
+        item = next(itemResponse, None)
+        if item:
+            testcases = rallyUtil.rally.getCollection('https://rally1.rallydev.com/slm/webservice/v2.0/TestFolder/' + str(item.oid) +'/TestCases')
+            for testcase in testcases:
+                rallyUtil.add_testcasetotestset(testsetID, testcase.FormattedID)
+                # for idx, testType in enumerate(testTypes):
+                    # if testcase.Type == testType:
+                    # rallyUtil.add_testcasetotestfolder(testset, testcase.FormattedID)
+                # if testcase.Type == 'Functional':
+                #     rallyUtil.add_testcasetotestfolder(testsets[0], testcase.FormattedID)
+                # elif testcase.Type == 'Performance':
+                #     rallyUtil.add_testcasetotestfolder(testsets[1], testcase.FormattedID)
+                # elif testcase.Type == 'Scalability':
+                #     rallyUtil.add_testcasetotestfolder(testsets[2], testcase.FormattedID)
+                # elif testcase.Type == 'Stability':
+                #     rallyUtil.add_testcasetotestfolder(testsets[3], testcase.FormattedID)
+
+        end_time = datetime.now()
+        # print('Duration: {}'.format(end_time - start_time))
+        duration = end_time - start_time
+        logging.info(f'Duration: {duration}')
+
+
+        logging.info("Test is done")
     # print("test is done")
 
 

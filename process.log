@@ -1,0 +1,6 @@
+2020-06-29 21:05:58.494 - root  [ERROR] [MainThread] T14.JobPriorities_FT doesn't have file "scenario_class.yml"
+2020-06-29 21:06:02.298 - root  [ERROR] [MainThread] T28.ServerControl_FT doesn't have file "scenario_class.yml"
+2020-06-29 21:06:03.508 - root  [ERROR] [MainThread] T29.ServerMemory_Leaks doesn't have file "scenario_class.yml"
+2020-06-29 21:06:05.891 - root  [ERROR] [MainThread] T626.EncryptionKey_FT doesn't have file "scenario_class.yml"
+2020-06-29 21:06:07.097 - root  [ERROR] [MainThread] T627.CacheParser_FT doesn't have file "scenario_class.yml"
+2020-06-29 21:06:12.011 - root  [ERROR] [MainThread] T672.RWDACL_FT doesn't have file "scenario_class.yml"
